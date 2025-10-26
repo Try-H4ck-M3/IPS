@@ -3,8 +3,12 @@
 #include "packets/packet_processor.h"
 #include "logger/logger.h"
 #include "rules/parser.h"
+#include "rate_limit/rate_limiter.h"
 
 #include <tclap/CmdLine.h>
+
+// Global rate limiter
+RateLimiter* g_rate_limiter = nullptr;
 
 int main(int argc, char** argv)
 {
@@ -17,7 +21,15 @@ int main(int argc, char** argv)
 
     Logger logger(verbose);
     set_packet_processor_logger(&logger);
+    
+    // Initialize the global rate limiter
+    g_rate_limiter = new RateLimiter();
+    
     prepare(logger);
+    
+    // Load rules early to show them in verbose mode
+    logger.info("Loading IPS rules...");
+    load_rules_at_startup();
 
     cout << endl;
     logger.info("IPS started successfully.");

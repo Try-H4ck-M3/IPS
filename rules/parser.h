@@ -14,6 +14,12 @@ struct Rule {
     string protocol;
     string action;
     string string_content;
+    
+    // Rate limiting fields
+    bool is_rate_limit_rule;
+    int max_requests;
+    int time_window_seconds;
+    int ban_duration_seconds;
 
     // Optional: method to print rule (only in verbose mode)
     void print(Logger& logger) const
@@ -33,6 +39,12 @@ struct Rule {
             if (!string_content.empty())
             {
                 cout << "|   String   : " << string_content << "\n";
+            }
+            if (is_rate_limit_rule)
+            {
+                cout << "|" << endl;
+                cout << "|   Rate Limit   : " << max_requests << " requests per " << time_window_seconds << " seconds\n";
+                cout << "|   Ban Duration : " << ban_duration_seconds << " seconds\n";
             }
             cout << "\n";
         }

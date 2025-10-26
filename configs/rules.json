@@ -51,5 +51,19 @@
     "dst_port": "(80 OR 443) AND (NOT 8080)",
     "protocol": "TCP OR UDP",
     "action": "alert"
+  },
+  {
+    "rule_id": 1010,
+    "description": "Rate limit protection - block excessive requests",
+    "src_ip": "any",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "any",
+    "rate_limit": true,
+    "max_requests": 10,
+    "time_window_seconds": 1,
+    "ban_duration_seconds": 300,
+    "action": "drop"
   }
 ]

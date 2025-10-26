@@ -1,6 +1,9 @@
 #include "packet_processor.h"
 #include "../rules/expression_parser.h"
+#include "../rate_limit/rate_limiter.h"
 
+// External reference to global rate limiter (defined in IPS.cpp)
+extern RateLimiter* g_rate_limiter;
 
 static Logger *g_logger = nullptr;
 
@@ -21,10 +24,20 @@ static vector<Rule> &get_rules()
             static Logger fallback_logger(false);
             g_logger = &fallback_logger;
         }
+        // Parse rules (will print if logger is verbose)
         rules = parse_all_rules("./configs/rules.json", *g_logger);
         initialized = true;
     }
     return rules;
+}
+
+// Force load rules at startup to show them in verbose mode
+void load_rules_at_startup()
+{
+    if (g_logger) {
+        g_logger->verbose_log("Starting to load rules from config...");
+    }
+    get_rules(); // This will trigger the one-time rule loading with proper logger
 }
 
 static string protocol_to_string(uint8_t protocol)
@@ -121,6 +134,47 @@ bool packet_processor(unsigned char *data, int len, string src_ip, string dst_ip
     (void)len;
 
     vector<Rule> &rules = get_rules();
+
+    // First, check rate limiting rules
+    for (const Rule &rule : rules)
+    {
+        if (rule.is_rate_limit_rule && g_rate_limiter != nullptr)
+        {
+            if (rule_matches(rule, src_ip, dst_ip, src_port, dst_port, protocol, data, len))
+            {
+                // Check if IP should be rate limited
+                if (g_rate_limiter->check_rate_limit(src_ip, rule.max_requests, rule.time_window_seconds))
+                {
+                    // Rate limit exceeded, ban the IP
+                    g_rate_limiter->ban_ip(src_ip, rule.ban_duration_seconds);
+                    
+                    g_logger->alert("Rate limit exceeded by " + src_ip + 
+                                    " (exceeded " + to_string(rule.max_requests) + 
+                                    " requests per " + to_string(rule.time_window_seconds) + 
+                                    " seconds) - Banned for " + to_string(rule.ban_duration_seconds) + " seconds");
+                    
+                    // Apply the action (usually drop)
+                    return decide_verdict_from_action(rule.action, data, len, src_ip, dst_ip, src_port, dst_port, protocol, rule);
+                }
+            }
+        }
+    }
+    
+    // Check if IP is currently banned (check all rate limit rules for consistency)
+    if (g_rate_limiter != nullptr)
+    {
+        for (const Rule &rule : rules)
+        {
+            if (rule.is_rate_limit_rule)
+            {
+                if (g_rate_limiter->is_banned(src_ip))
+                {
+                    g_logger->alert("Banned IP " + src_ip + " attempted connection");
+                    return false; // Drop banned IPs
+                }
+            }
+        }
+    }
 
     string last_action = ""; // track last matching action
     Rule last_rule;          // track last matching rule

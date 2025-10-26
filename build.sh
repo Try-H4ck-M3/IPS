@@ -10,4 +10,5 @@ g++ -s -o ./build/IPS \
     ./logger/logger.cpp \
     ./rules/parser.cpp \
     ./rules/expression_parser.cpp \
-    -lnetfilter_queue 
+    ./rate_limit/rate_limiter.cpp \
+    -lnetfilter_queue -lpthread 
