@@ -67,7 +67,7 @@ vector<Rule> parse_all_rules(string rules_file_path, Logger logger)
     ifstream file(rules_file_path);
     if (!file.is_open())
     {
-        logger.error("Cannot open file " + rules_file_path);
+        logger.error("Cannot open file \"" + rules_file_path + "\". Creating empty one.");
         return {};
     }
 
