@@ -1,4 +1,5 @@
 #include "packet_processor.h"
+#include "../rules/expression_parser.h"
 
 
 static Logger *g_logger = nullptr;
@@ -20,7 +21,7 @@ static vector<Rule> &get_rules()
             static Logger fallback_logger(false);
             g_logger = &fallback_logger;
         }
-        rules = parse_all_rules("./rules.json", *g_logger);
+        rules = parse_all_rules("./configs/rules.json", *g_logger);
         initialized = true;
     }
     return rules;
@@ -41,12 +42,33 @@ static string to_upper_copy(string s)
 
 static bool ip_matches(const string &rule_ip, const string &value_ip)
 {
-    return (rule_ip == "any" || rule_ip == "ANY" || rule_ip == value_ip);
+    ExpressionParser parser(rule_ip);
+    return parser.evaluate(value_ip, "ip");
 }
 
-static bool port_matches(int rule_port, uint16_t value_port)
+static bool port_matches(const string &rule_port, uint16_t value_port)
 {
-    return (rule_port == -1 || static_cast<uint16_t>(rule_port) == value_port);
+    ExpressionParser parser(rule_port);
+    return parser.evaluate(to_string(value_port), "port");
+}
+
+static bool string_matches(const string &rule_string, unsigned char *data, int len)
+{
+    if (rule_string.empty())
+    {
+        return true; // No string to match, so it matches
+    }
+    
+    if (len <= 0 || data == nullptr)
+    {
+        return false; // No data to search
+    }
+    
+    // Convert packet data to string for expression evaluation
+    string packet_data_str(data, data + len);
+    
+    ExpressionParser parser(rule_string);
+    return parser.evaluate(packet_data_str, "string");
 }
 
 static bool rule_matches(const Rule &rule,
@@ -54,7 +76,9 @@ static bool rule_matches(const Rule &rule,
                          const string &dst_ip,
                          uint16_t src_port,
                          uint16_t dst_port,
-                         uint8_t protocol)
+                         uint8_t protocol,
+                         unsigned char *data,
+                         int len)
 {
     if (!ip_matches(rule.src_ip, src_ip)) return false;
     if (!ip_matches(rule.dst_ip, dst_ip)) return false;
@@ -63,6 +87,10 @@ static bool rule_matches(const Rule &rule,
 
     string rule_proto = to_upper_copy(rule.protocol);
     if (!(rule_proto == "ANY" || rule_proto == to_upper_copy(protocol_to_string(protocol))))
+        return false;
+
+    // Check string content if specified
+    if (!string_matches(rule.string_content, data, len))
         return false;
 
     return true;
@@ -99,7 +127,7 @@ bool packet_processor(unsigned char *data, int len, string src_ip, string dst_ip
 
     for (const Rule &rule : rules)
     {
-        if (rule_matches(rule, src_ip, dst_ip, src_port, dst_port, protocol))
+        if (rule_matches(rule, src_ip, dst_ip, src_port, dst_port, protocol, data, len))
         {
             string act = to_upper_copy(rule.action);
             if (act == "ALERT")

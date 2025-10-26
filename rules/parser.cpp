@@ -2,7 +2,7 @@
 
 static void check_unknown_fields(const json& item, Logger& logger)
 {
-    vector<string> known_fields = {"rule_id", "description", "src_ip", "dst_ip", "src_port", "dst_port", "protocol", "action"};
+    vector<string> known_fields = {"rule_id", "description", "src_ip", "dst_ip", "src_port", "dst_port", "protocol", "action", "string"};
     
     for (const auto& [key, value] : item.items())
     {
@@ -13,9 +13,8 @@ static void check_unknown_fields(const json& item, Logger& logger)
     }
 }
 
-static int validate_rule(const json& item, Logger& logger)
+static int validate_rule(const json& item, Logger& logger, set<int>& seen_rule_ids)
 {
-    static set<int> seen_rule_ids;
     if (!item.contains("rule_id") || item.at("rule_id").is_null())
     {
         logger.error("Rule ID is required");
@@ -51,11 +50,7 @@ static int validate_rule(const json& item, Logger& logger)
         logger.error("Either src_ip or dst_ip is required");
         return 1;
     }
-    if ((!item.contains("src_port") || item.at("src_port").is_null()) && (!item.contains("dst_port") || item.at("dst_port").is_null()))
-    {
-        logger.error("Either src_port or dst_port is required");
-        return 1;
-    }
+    // Port validation is now optional since we support expressions
 
     return 0;
 }
@@ -93,12 +88,13 @@ vector<Rule> parse_all_rules(string rules_file_path, Logger logger)
 
     // Parse each rule
     vector<Rule> rules;
+    set<int> seen_rule_ids; // Local set for this parsing session
     for (const auto& item : j)
     {
         try
         {
             logger.verbose_log("Processing rule \"" + item.value("description", "unknown") + "\" (ID: " + to_string(item.value("rule_id", -1)) + ")");
-            if (validate_rule(item, logger) != 0)
+            if (validate_rule(item, logger, seen_rule_ids) != 0)
             {
                 logger.error("Invalid rule. Cannot continue");
                 return {};
@@ -112,17 +108,18 @@ vector<Rule> parse_all_rules(string rules_file_path, Logger logger)
             rule.description  = item.value("description", "unknown");
             rule.src_ip       = item.value("src_ip", string("any"));
             rule.dst_ip       = item.value("dst_ip", string("any"));
-            rule.src_port     = item.value("src_port", -1);
-            rule.dst_port     = item.value("dst_port", -1);
+            rule.src_port     = item.value("src_port", string("any"));
+            rule.dst_port     = item.value("dst_port", string("any"));
             rule.protocol     = item.value("protocol", string("any"));
             rule.action       = item.value("action", string("accept"));
+            rule.string_content = item.value("string", string(""));
 
             rule.print(logger);
             rules.push_back(rule);
         }
         catch (const exception& e)
         {
-            logger.error("This should never happer. Please report, if you see this message. Malformed rule - " + string(e.what()));
+            logger.error("This should never happen. Please report, if you see this message. Malformed rule - " + string(e.what()));
             logger.error("Invalid rule. Cannot continue");
             return {};
         }

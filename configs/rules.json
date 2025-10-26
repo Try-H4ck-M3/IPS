@@ -1,22 +1,55 @@
 [
   {
-    "rule_id": 1002,
-    "description": "Block github",
+    "rule_id": 1001,
+    "description": "Block github IPs",
     "src_ip": "140.82.121.3",
     "dst_ip": "any",
-    "src_port": -1,
-    "dst_port": -1,
+    "src_port": "any",
+    "dst_port": "any",
     "protocol": "TCP",
     "action": "drop"
   },
   {
-    "rule_id": 1001,
-    "description": "Alert github",
-    "src_ip": "140.82.121.3",
+    "rule_id": 1003,
+    "description": "Block SQL injection attempts",
+    "src_ip": "any",
     "dst_ip": "any",
-    "src_port": -1,
-    "dst_port": -1,
+    "src_port": "any",
+    "dst_port": "any",
     "protocol": "TCP",
+    "string": "select OR union OR drop",
+    "action": "drop"
+  },
+  {
+    "rule_id": 1007,
+    "description": "Block icon",
+    "src_ip": "any",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "TCP",
+    "string": "favicon.ico",
+    "action": "drop"
+  },
+  {
+    "rule_id": 1004,
+    "description": "Alert SQL injection attempts",
+    "src_ip": "any",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "TCP",
+    "string": "select OR union OR drop",
+    "action": "alert"
+  },
+  {
+    "rule_id": 1005,
+    "description": "Complex rule with parentheses",
+    "src_ip": "192.168.1.0/24 OR (10.0.0.1 AND 10.0.0.2)",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "(80 OR 443) AND (NOT 8080)",
+    "protocol": "TCP OR UDP",
     "action": "alert"
   }
 ]

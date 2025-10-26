@@ -2,16 +2,18 @@
 #include "../includes.h"
 #include "../logger/logger.h"
 #include "../utils/utils.h"
+#include "expression_parser.h"
 
 struct Rule {
     int rule_id;
     string description;
     string src_ip;
     string dst_ip;
-    int src_port;
-    int dst_port;
+    string src_port;
+    string dst_port;
     string protocol;
     string action;
+    string string_content;
 
     // Optional: method to print rule (only in verbose mode)
     void print(Logger& logger) const
@@ -23,26 +25,16 @@ struct Rule {
             cout << "|   Src IP   : " << src_ip << "\n";
             cout << "|   Dst IP   : " << dst_ip << "\n";
             
-            if (src_port == -1)
-            {
-                cout << "|   Src Port : " << "any" << "\n";
-            }
-            else
-            {
-                cout << "|   Src Port : " << src_port << "\n";
-            }
-            
-            if (dst_port == -1)
-            {
-                cout << "|   Dst Port : " << "any" << "\n";
-            }
-            else
-            {
-                cout << "|   Dst Port : " << dst_port << "\n";
-            }
+            cout << "|   Src Port : " << src_port << "\n";
+            cout << "|   Dst Port : " << dst_port << "\n";
             
             cout << "|   Protocol : " << protocol << "\n";
-            cout << "|   Action   : " << action << "\n\n";
+            cout << "|   Action   : " << action << "\n";
+            if (!string_content.empty())
+            {
+                cout << "|   String   : " << string_content << "\n";
+            }
+            cout << "\n";
         }
     }
 };

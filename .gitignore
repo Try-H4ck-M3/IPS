@@ -39,3 +39,7 @@
 
 # debug information files
 *.dwo
+
+
+# Output binary
+build/IPS
