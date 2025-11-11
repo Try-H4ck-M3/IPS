@@ -1,0 +1,6 @@
+admin:
+  username: admin
+  password: h3ll0w0rld
+
+web:
+  enabled: true

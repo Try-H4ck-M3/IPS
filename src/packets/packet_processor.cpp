@@ -35,7 +35,7 @@ static vector<Rule> &get_rules()
 void load_rules_at_startup()
 {
     if (g_logger) {
-        g_logger->verbose_log("Starting to load rules from config...");
+        g_logger->verbose_log("Starting to load rules from config");
     }
     get_rules(); // This will trigger the one-time rule loading with proper logger
 }
@@ -150,7 +150,7 @@ bool packet_processor(unsigned char *data, int len, string src_ip, string dst_ip
                     
                     g_logger->alert("Rate limit exceeded by " + src_ip + 
                                     " (exceeded " + to_string(rule.max_requests) + 
-                                    " requests per " + to_string(rule.time_window_seconds) + 
+                                    " packets per " + to_string(rule.time_window_seconds) + 
                                     " seconds) - Banned for " + to_string(rule.ban_duration_seconds) + " seconds");
                     
                     // Apply the action (usually drop)

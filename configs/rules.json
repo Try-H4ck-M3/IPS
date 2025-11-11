@@ -56,7 +56,7 @@
     "rule_id": 1010,
     "description": "Rate limit protection - block excessive requests",
     "src_ip": "any",
-    "dst_ip": "any",
+    "dst_ip": "127.0.0.1",
     "src_port": "any",
     "dst_port": "any",
     "protocol": "any",

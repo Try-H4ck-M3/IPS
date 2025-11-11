@@ -1,7 +1,5 @@
 #pragma once
 #include "../includes.h"
-#include <mutex>
-#include <algorithm>
 
 struct RateLimitEntry {
     string ip;
