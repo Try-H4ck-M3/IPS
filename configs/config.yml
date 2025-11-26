@@ -4,3 +4,6 @@ admin:
 
 web:
   enabled: true
+
+rules:
+  path: ./configs/rules.sample.json

@@ -6,6 +6,7 @@
 extern RateLimiter* g_rate_limiter;
 
 static Logger *g_logger = nullptr;
+string g_rules_path = "./configs/rules.json"; // Default path, can be overridden from config
 
 void set_packet_processor_logger(Logger *logger)
 {
@@ -25,7 +26,7 @@ static vector<Rule> &get_rules()
             g_logger = &fallback_logger;
         }
         // Parse rules (will print if logger is verbose)
-        rules = parse_all_rules("./configs/rules.json", *g_logger);
+        rules = parse_all_rules(g_rules_path, *g_logger);
         initialized = true;
     }
     return rules;

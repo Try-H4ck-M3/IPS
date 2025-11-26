@@ -45,6 +45,9 @@ int main(int argc, char** argv)
             parser.printAll();
         }
         
+        // Set rules path from config
+        g_rules_path = parser.get("rules.path", "./configs/rules.json");
+        
         // Load rules early to show them in verbose mode
         load_rules_at_startup();
 
