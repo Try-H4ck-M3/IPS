@@ -14,6 +14,7 @@ struct Rule {
     string protocol;
     string action;
     string string_content;
+    string regex_content;
     
     // Rate limiting fields
     bool is_rate_limit_rule;
@@ -39,6 +40,10 @@ struct Rule {
             if (!string_content.empty())
             {
                 cout << "|   String   : " << string_content << "\n";
+            }
+            if (!regex_content.empty())
+            {
+                cout << "|   Regex    : " << regex_content << "\n";
             }
             if (is_rate_limit_rule)
             {

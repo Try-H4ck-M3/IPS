@@ -2,7 +2,7 @@
 
 static void check_unknown_fields(const json& item, Logger& logger)
 {
-    vector<string> known_fields = {"rule_id", "description", "src_ip", "dst_ip", "src_port", "dst_port", "protocol", "action", "string", 
+    vector<string> known_fields = {"rule_id", "description", "src_ip", "dst_ip", "src_port", "dst_port", "protocol", "action", "string", "regex",
                                    "rate_limit", "max_requests", "time_window_seconds", "ban_duration_seconds"};
     
     for (const auto& [key, value] : item.items())
@@ -114,6 +114,7 @@ vector<Rule> parse_all_rules(string rules_file_path, Logger logger)
             rule.protocol     = item.value("protocol", string("any"));
             rule.action       = item.value("action", string("accept"));
             rule.string_content = item.value("string", string(""));
+            rule.regex_content = item.value("regex", string(""));
             
             // Parse rate limiting fields
             rule.is_rate_limit_rule = item.value("rate_limit", false);

@@ -85,6 +85,37 @@ static bool string_matches(const string &rule_string, unsigned char *data, int l
     return parser.evaluate(packet_data_str, "string");
 }
 
+static bool regex_matches(const string &rule_regex, unsigned char *data, int len)
+{
+    if (rule_regex.empty())
+    {
+        return true; // No regex to match, so it matches
+    }
+    
+    if (len <= 0 || data == nullptr)
+    {
+        return false; // No data to search
+    }
+    
+    // Convert packet data to string for regex matching
+    string packet_data_str(data, data + len);
+    
+    try
+    {
+        regex pattern(rule_regex, regex_constants::icase | regex_constants::ECMAScript);
+        return regex_search(packet_data_str, pattern);
+    }
+    catch (const regex_error&)
+    {
+        // Invalid regex pattern - log and return false
+        if (g_logger != nullptr)
+        {
+            g_logger->warn("Invalid regex pattern: " + rule_regex);
+        }
+        return false;
+    }
+}
+
 static bool rule_matches(const Rule &rule,
                          const string &src_ip,
                          const string &dst_ip,
@@ -105,6 +136,10 @@ static bool rule_matches(const Rule &rule,
 
     // Check string content if specified
     if (!string_matches(rule.string_content, data, len))
+        return false;
+
+    // Check regex content if specified
+    if (!regex_matches(rule.regex_content, data, len))
         return false;
 
     return true;

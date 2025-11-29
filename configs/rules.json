@@ -8,5 +8,27 @@
     "dst_port": "any",
     "protocol": "TCP",
     "action": "drop"
+  },
+  {
+    "rule_id": 1002,
+    "description": "Block SQL injection patterns by regex",
+    "src_ip": "any",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "TCP",
+    "regex": ".*(union|select|drop|delete|insert).*",
+    "action": "drop"
+  },
+  {
+    "rule_id": 1003,
+    "description": "Alert on SQL injection patterns by regex",
+    "src_ip": "any",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "TCP",
+    "regex": ".*(union|select|drop|delete|insert).*",
+    "action": "alert"
   }
 ]

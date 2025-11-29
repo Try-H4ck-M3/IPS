@@ -6,4 +6,4 @@ web:
   enabled: true
 
 rules:
-  path: ./configs/rules.sample.json
+  path: ./configs/rules.json

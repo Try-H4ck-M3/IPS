@@ -10,6 +10,7 @@
 #include <set>
 #include <mutex>
 #include <algorithm>
+#include <regex>
 
 #include <nlohmann/json.hpp>
 #include <yaml-cpp/yaml.h>
