@@ -7,3 +7,4 @@ web:
 
 rules:
   path: ./configs/rules.json
+  logpath: "./logs/main.log"

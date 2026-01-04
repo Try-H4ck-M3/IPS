@@ -27,32 +27,30 @@ struct Rule {
     {
         if (logger.is_verbose())
         {
-            cout << "| Rule ID    : " << rule_id << "\n";
-            cout << "|   Desc     : " << description << "\n";
-            cout << "|   Src IP   : " << src_ip << "\n";
-            cout << "|   Dst IP   : " << dst_ip << "\n";
-            
-            cout << "|   Src Port : " << src_port << "\n";
-            cout << "|   Dst Port : " << dst_port << "\n";
-            
-            cout << "|   Protocol : " << protocol << "\n";
-            cout << "|   Action   : " << action << "\n";
+            logger.write_raw("| Rule ID    : " + to_string(rule_id));
+            logger.write_raw("|   Desc     : " + description);
+            logger.write_raw("|   Src IP   : " + src_ip);
+            logger.write_raw("|   Dst IP   : " + dst_ip);
+            logger.write_raw("|   Src Port : " + src_port);
+            logger.write_raw("|   Dst Port : " + dst_port);
+            logger.write_raw("|   Protocol : " + protocol);
+            logger.write_raw("|   Action   : " + action);
             if (!string_content.empty())
             {
-                cout << "|   String   : " << string_content << "\n";
+                logger.write_raw("|   String   : " + string_content);
             }
             if (!regex_content.empty())
             {
-                cout << "|   Regex    : " << regex_content << "\n";
+                logger.write_raw("|   Regex    : " + regex_content);
             }
             if (is_rate_limit_rule)
             {
-                cout << "|" << endl;
-                cout << "|   Rate Limit   : " << max_requests << " requests per " << time_window_seconds << " seconds\n";
-                cout << "|   Ban Duration : " << ban_duration_seconds << " seconds\n";
+                logger.write_raw("|");
+                logger.write_raw("|   Rate Limit   : " + to_string(max_requests) + " requests per " + to_string(time_window_seconds) + " seconds");
+                logger.write_raw("|   Ban Duration : " + to_string(ban_duration_seconds) + " seconds");
             }
-            cout << "\n";
+            logger.write_raw("");
         }
     }
 };
-vector<Rule> parse_all_rules(string rules_file_path, Logger logger);
+vector<Rule> parse_all_rules(string rules_file_path, Logger& logger);

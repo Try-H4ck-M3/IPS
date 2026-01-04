@@ -112,7 +112,7 @@ process_packet:
     return nfq_set_verdict(qh, id, verdict ? NF_ACCEPT : NF_DROP, 0, nullptr);
 }
 
-int prepare(Logger logger)
+int prepare(Logger& logger)
 {
     uid_t uid = geteuid();
     if (uid != 0)

@@ -10,6 +10,16 @@
     "action": "drop"
   },
   {
+    "rule_id": 1004,
+    "description": "ALert github IPs",
+    "src_ip": "140.82.121.3",
+    "dst_ip": "any",
+    "src_port": "any",
+    "dst_port": "any",
+    "protocol": "TCP",
+    "action": "alert"
+  },
+  {
     "rule_id": 1002,
     "description": "Block SQL injection patterns by regex",
     "src_ip": "any",

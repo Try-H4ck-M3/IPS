@@ -56,7 +56,7 @@ static int validate_rule(const json& item, Logger& logger, set<int>& seen_rule_i
     return 0;
 }
 
-vector<Rule> parse_all_rules(string rules_file_path, Logger logger)
+vector<Rule> parse_all_rules(string rules_file_path, Logger& logger)
 {
     logger.info("Proceessing rules from \"" + rules_file_path + "\" next:");
     // Open file

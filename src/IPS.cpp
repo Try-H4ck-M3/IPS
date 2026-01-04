@@ -26,16 +26,17 @@ int main(int argc, char** argv)
         bool verbose = debug_arg.getValue();
         string configpath = configpath_arg.getValue();
 
-        Logger logger(verbose);
-        set_packet_processor_logger(&logger);
+        // Create a temporary logger for initial config loading
+        Logger temp_logger(verbose);
+        set_packet_processor_logger(&temp_logger);
         
         // Initialize the global rate limiter
         g_rate_limiter = new RateLimiter();
         
-        prepare(logger);
-        logger.info("Loading config");
+        prepare(temp_logger);
+        temp_logger.info("Loading config");
         ConfigParser parser(configpath);
-        if (!parser.loadConfig(&logger))
+        if (!parser.loadConfig(&temp_logger))
         {
             cerr << "Failed to load configuration!" << endl;
             return 1;
@@ -47,6 +48,11 @@ int main(int argc, char** argv)
         
         // Set rules path from config
         g_rules_path = parser.get("rules.path", "./configs/rules.json");
+        
+        // Get logpath from config and create logger with file logging
+        string logpath = parser.get("rules.logpath", "");
+        Logger logger(verbose, logpath);
+        set_packet_processor_logger(&logger);
         
         // Load rules early to show them in verbose mode
         load_rules_at_startup();

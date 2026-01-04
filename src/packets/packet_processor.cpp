@@ -148,7 +148,7 @@ static bool rule_matches(const Rule &rule,
 static void handle_alert(unsigned char *data, int len, string src_ip, string dst_ip, uint16_t src_port, uint16_t dst_port, uint8_t protocol, Rule last_rule)
 {
     g_logger->alert(src_ip + ":" + to_string(src_port) + " -> " + dst_ip + ":" + to_string(dst_port) + " (" + protocol_to_string(protocol) + ")");
-    cout << "| Matches rule: \"" << last_rule.description << "\" (ID: " << last_rule.rule_id << ")" << endl;
+    g_logger->write_raw("| Matches rule: \"" + last_rule.description + "\" (ID: " + to_string(last_rule.rule_id) + ")");
     if (g_logger->is_verbose())
     {
         last_rule.print(*g_logger);
