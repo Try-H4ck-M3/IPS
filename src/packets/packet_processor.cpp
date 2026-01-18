@@ -217,6 +217,11 @@ bool packet_processor(unsigned char *data, int len, string src_ip, string dst_ip
 
     for (const Rule &rule : rules)
     {
+        // Skip rate limit rules - they are handled separately above
+        if (rule.is_rate_limit_rule)
+        {
+            continue;
+        }
         if (rule_matches(rule, src_ip, dst_ip, src_port, dst_port, protocol, data, len))
         {
             string act = to_upper_copy(rule.action);
