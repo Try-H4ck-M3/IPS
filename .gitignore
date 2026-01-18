@@ -46,3 +46,6 @@ build/IPS
 
 # Sample Database
 sample-vuln-app/test.db
+
+# Logs
+logs/main.log

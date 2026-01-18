@@ -216,3 +216,49 @@
 | Matches rule: "ALert github IPs" (ID: 1004)
 2026-01-04 13:02:50 - ALRT - 140.82.121.3:443 -> 192.168.0.233:54598 (TCP)
 | Matches rule: "ALert github IPs" (ID: 1004)
+2026-01-18 11:55:33 - VERB - Starting to load rules from config
+2026-01-18 11:55:33 - INFO - Proceessing rules from "./configs/rules.json" next:
+2026-01-18 11:55:33 - VERB - Processing rule "Block github IPs" (ID: 1001)
+| Rule ID    : 1001
+|   Desc     : Block github IPs
+|   Src IP   : 140.82.121.3
+|   Dst IP   : any
+|   Src Port : any
+|   Dst Port : any
+|   Protocol : TCP
+|   Action   : drop
+
+2026-01-18 11:55:33 - VERB - Processing rule "ALert github IPs" (ID: 1004)
+| Rule ID    : 1004
+|   Desc     : ALert github IPs
+|   Src IP   : 140.82.121.3
+|   Dst IP   : any
+|   Src Port : any
+|   Dst Port : any
+|   Protocol : TCP
+|   Action   : alert
+
+2026-01-18 11:55:33 - VERB - Processing rule "Block SQL injection patterns by regex" (ID: 1002)
+| Rule ID    : 1002
+|   Desc     : Block SQL injection patterns by regex
+|   Src IP   : any
+|   Dst IP   : any
+|   Src Port : any
+|   Dst Port : any
+|   Protocol : TCP
+|   Action   : drop
+|   Regex    : .*(union|select|drop|delete|insert).*
+
+2026-01-18 11:55:33 - VERB - Processing rule "Alert on SQL injection patterns by regex" (ID: 1003)
+| Rule ID    : 1003
+|   Desc     : Alert on SQL injection patterns by regex
+|   Src IP   : any
+|   Dst IP   : any
+|   Src Port : any
+|   Dst Port : any
+|   Protocol : TCP
+|   Action   : alert
+|   Regex    : .*(union|select|drop|delete|insert).*
+
+2026-01-18 11:55:33 - INFO - All rules OK. Loaded 4 rules
+2026-01-18 11:55:33 - INFO - IPS started successfully
